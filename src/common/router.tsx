@@ -1,10 +1,10 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import SignUpPage from '../sign-up/sign-up.page';
+import AccountPage from '../account/account.page';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <SignUpPage />,
+    element: <AccountPage />,
   },
 ]);
 
