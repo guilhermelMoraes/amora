@@ -47,14 +47,17 @@ function Tabs({ tabs, ariaLabel }: TabsProps) {
           value={tabIndex}
           onChange={navigateToTab}
           aria-label={ariaLabel}
+          centered
         >
-          {tabs.map(({ name, index }) => (
-            <MuiTab label={name} id={`tab-${index}`} />
-          ))}
+          {tabs.map(({ name, index }) => {
+            const id = `tab-${index}`;
+
+            return <MuiTab label={name} id={id} key={id} />;
+          })}
         </MuiTabs>
       </Box>
       {tabs.map(({ children, index }) => (
-        <TabPanel index={index} currentIndex={tabIndex}>
+        <TabPanel index={index} currentIndex={tabIndex} key={index}>
           {children}
         </TabPanel>
       ))}
