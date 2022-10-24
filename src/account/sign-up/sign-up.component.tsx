@@ -1,29 +1,21 @@
-/* eslint-disable react/jsx-props-no-spreading */
-import TextField, { BaseTextFieldProps } from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import InputAdornment from '@mui/material/InputAdornment';
-import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField, { BaseTextFieldProps } from '@mui/material/TextField';
 
-import { SchemaOf, object, string, ref } from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm, FieldErrorsImpl } from 'react-hook-form';
 import { useState } from 'react';
-
-type SignUpFormFields = {
-  email: string;
-  password: string;
-  confirmation: string;
-};
-
-type FormErrors = Partial<FieldErrorsImpl<SignUpFormFields>>;
+import { FieldErrorsImpl, useForm } from 'react-hook-form';
+import { date, object, ref, SchemaOf, string } from 'yup';
+import SignUpDto from './sign-up.dto';
 
 const commonTextFieldProps = (
-  errors: FormErrors,
-  field: keyof SignUpFormFields
+  errors: Partial<FieldErrorsImpl<SignUpDto>>,
+  field: keyof SignUpDto
 ): BaseTextFieldProps => ({
   variant: 'outlined',
   size: 'small',
@@ -38,6 +30,48 @@ const commonTextFieldProps = (
 });
 
 function SignUpComponent() {
+  const REQUIRED_FIELD_MESSAGE = 'Campo obrigatório';
+
+  const signUpValidation: SchemaOf<SignUpDto> = object({
+    email: string().email('E-mail inválido').required('Campo obrigatório'),
+    firstName: string()
+      .required(REQUIRED_FIELD_MESSAGE)
+      .min(2, 'Nome deve conter, no mínimo, dois caracteres')
+      .max(60, 'Nome deve conter, no máximo, sessenta caracteres'),
+    surname: string()
+      .required(REQUIRED_FIELD_MESSAGE)
+      .min(2, 'Sobrenome deve conter, no mínimo, dois caracteres')
+      .max(60, 'Sobrenome deve conter, no máximo, sessenta caracteres'),
+    birthday: date()
+      .required(REQUIRED_FIELD_MESSAGE)
+      .typeError('Data em formato inválido'),
+    password: string()
+      .required(REQUIRED_FIELD_MESSAGE)
+      .min(8, 'Senha deve conter, no mínimo, oito caracteres')
+      .max(80, 'Senha deve conter, no máximo, oitenta caracteres'),
+    confirmation: string()
+      .required(REQUIRED_FIELD_MESSAGE)
+      .min(8, 'Senha deve conter, no mínimo, oito caracteres')
+      .max(80, 'Senha deve conter, no máximo, oitenta caracteres')
+      .oneOf([ref('password')], 'Senha e confirmação diferentes'),
+  });
+
+  const {
+    register,
+    formState: { errors, isValid },
+  } = useForm<SignUpDto>({
+    defaultValues: {
+      email: '',
+      password: '',
+      firstName: '',
+      surname: '',
+      birthday: new Date(),
+      confirmation: '',
+    },
+    mode: 'all',
+    resolver: yupResolver(signUpValidation),
+  });
+
   const [passwordVisible, setPasswordVisible] = useState(false);
   const passwordType = passwordVisible ? 'text' : 'password';
   const passwordInputIcon = passwordVisible ? (
@@ -57,32 +91,6 @@ function SignUpComponent() {
     </InputAdornment>
   );
 
-  const localSignUpValidationSchema: SchemaOf<SignUpFormFields> = object({
-    email: string().email('E-mail inválido').required('Campo obrigatório'),
-    password: string()
-      .required('Campo obrigatório')
-      .min(8, 'Senha deve conter, no mínimo, oito caracteres')
-      .max(80, 'Senha deve conter, no máximo, oitenta caracteres'),
-    confirmation: string()
-      .required('Campo obrigatório')
-      .min(8, 'Senha deve conter, no mínimo, oito caracteres')
-      .max(80, 'Senha deve conter, no máximo, oitenta caracteres')
-      .oneOf([ref('password')], 'Senha e confirmação diferentes'),
-  });
-
-  const {
-    register,
-    formState: { errors, isValid },
-  } = useForm<SignUpFormFields>({
-    defaultValues: {
-      email: '',
-      password: '',
-      confirmation: '',
-    },
-    mode: 'all',
-    resolver: yupResolver(localSignUpValidationSchema),
-  });
-
   return (
     <form className="p-3">
       <TextField
@@ -91,6 +99,34 @@ function SignUpComponent() {
         fullWidth
         {...commonTextFieldProps(errors, 'email')}
         {...register('email')}
+      />
+      <Grid container spacing={{ sm: 2 }}>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Nome *"
+            type="text"
+            fullWidth
+            {...commonTextFieldProps(errors, 'firstName')}
+            {...register('firstName')}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Sobrenome *"
+            type="text"
+            fullWidth
+            {...commonTextFieldProps(errors, 'surname')}
+            {...register('surname')}
+          />
+        </Grid>
+      </Grid>
+      <TextField
+        label="Data de nascimento *"
+        type="date"
+        fullWidth
+        {...commonTextFieldProps(errors, 'birthday')}
+        {...register('birthday')}
+        InputLabelProps={{ shrink: true }}
       />
       <Grid container spacing={{ sm: 2 }}>
         <Grid item xs={12} sm={6}>
@@ -115,7 +151,6 @@ function SignUpComponent() {
             InputProps={{
               endAdornment: passwordAdornment(),
             }}
-            InputLabelProps={{}}
           />
         </Grid>
       </Grid>
