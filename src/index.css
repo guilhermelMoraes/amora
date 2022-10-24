@@ -1,3 +1,17 @@
+@import url("~@fontsource/roboto/300.css");
+@import url("~@fontsource/roboto/400.css");
+@import url("~@fontsource/roboto/500.css");
+@import url("~@fontsource/roboto/700.css");
+@import url("~bootstrap/dist/css/bootstrap.min.css");
+
+:root {
+  --app-breakpoint-sm: 576px;
+  --app-breakpoint-md: 768px;
+  --app-breakpoint-lg: 992px;
+  --app-breakpoint-xl: 1200px;
+  --app-breakpoint-xxl: 1400px;
+}
+
 * {
   margin: 0;
   padding: 0;

@@ -1,12 +1,13 @@
 import MuiTabs from '@mui/material/Tabs';
 import MuiTab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { ReactNode, SyntheticEvent, useState } from 'react';
+import { ReactElement, ReactNode, SyntheticEvent, useState } from 'react';
 
 type TabProps = {
   index: number;
   children: ReactNode;
   name: string;
+  icon?: string | ReactElement;
 };
 
 type TabPanelProps = {
@@ -49,10 +50,18 @@ function Tabs({ tabs, ariaLabel }: TabsProps) {
           aria-label={ariaLabel}
           centered
         >
-          {tabs.map(({ name, index }) => {
+          {tabs.map(({ icon, name, index }) => {
             const id = `tab-${index}`;
 
-            return <MuiTab label={name} id={id} key={id} />;
+            return (
+              <MuiTab
+                label={name}
+                icon={icon}
+                iconPosition="start"
+                id={id}
+                key={id}
+              />
+            );
           })}
         </MuiTabs>
       </Box>
