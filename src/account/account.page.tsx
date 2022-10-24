@@ -1,3 +1,6 @@
+import LoginIcon from '@mui/icons-material/Login';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+
 import Tabs from '../common/components/tabs/tabs';
 import useTitle from '../common/hooks/use-title';
 import './account.css';
@@ -7,18 +10,22 @@ function AccountPage() {
   useTitle('Sign-up or login');
 
   return (
-    <div className="sign-up bg-dark">
-      <main className="sign-up__main p-3 rounded bg-light">
-        <h1 className="text-center mb-3">AMORA</h1>
+    <div className="account bg-dark">
+      <main className="account__main rounded">
+        <header className="account__header rounded-top">
+          <h1 className="text-center text-light">AMORA</h1>
+        </header>
         <Tabs
           tabs={[
             {
-              name: 'Sign-up',
+              icon: <PersonAddIcon />,
+              name: 'Inscrever-se',
               index: 0,
               children: <SignUpComponent />,
             },
             {
-              name: 'Login',
+              icon: <LoginIcon />,
+              name: 'Conectar',
               index: 1,
               children: 'Login teste',
             },
