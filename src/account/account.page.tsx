@@ -4,13 +4,14 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import Tabs from '../common/components/tabs/tabs';
 import useTitle from '../common/hooks/use-title';
 import './account.css';
+import LoginComponent from './login/login.component';
 import SignUpComponent from './sign-up/sign-up.component';
 
 function AccountPage() {
-  useTitle('Sign-up or login');
+  useTitle('Cadastrar ou entrar');
 
   return (
-    <div className="account bg-dark">
+    <div className="page-body bg-dark">
       <main className="account__main rounded">
         <header className="account__header rounded-top">
           <h1 className="text-center text-light">AMORA</h1>
@@ -27,7 +28,7 @@ function AccountPage() {
               icon: <LoginIcon />,
               name: 'Conectar',
               index: 1,
-              children: 'Login teste',
+              children: <LoginComponent />,
             },
           ]}
         />

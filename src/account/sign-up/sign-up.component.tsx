@@ -2,6 +2,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -9,29 +10,32 @@ import TextField, { BaseTextFieldProps } from '@mui/material/TextField';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
-import { FieldErrorsImpl, useForm } from 'react-hook-form';
+import { FormState, useForm } from 'react-hook-form';
 import { date, object, ref, SchemaOf, string } from 'yup';
+import useHttp, { isHttpErrorResponse } from '../../common/hooks/use-http';
 import SignUpDto from './sign-up.dto';
 
 const commonTextFieldProps = (
-  errors: Partial<FieldErrorsImpl<SignUpDto>>,
+  formState: FormState<SignUpDto>,
   field: keyof SignUpDto
 ): BaseTextFieldProps => ({
   variant: 'outlined',
   size: 'small',
   autoComplete: 'off',
-  helperText: errors[field] ? errors[field]?.message : ' ',
+  disabled: formState.isSubmitting,
+  helperText: formState.errors[field] ? formState.errors[field]?.message : ' ',
   FormHelperTextProps: {
     classes: { root: 'text-truncate' },
-    title: errors[field] ? errors[field]?.message : ' ',
+    title: formState.errors[field] ? formState.errors[field]?.message : ' ',
   },
-  error: Boolean(errors[field]),
+  error: Boolean(formState.errors[field]),
   classes: { root: 'mb-3' },
 });
 
 function SignUpComponent() {
-  const REQUIRED_FIELD_MESSAGE = 'Campo obrigatório';
+  const { post } = useHttp();
 
+  const REQUIRED_FIELD_MESSAGE = 'Campo obrigatório';
   const signUpValidation: SchemaOf<SignUpDto> = object({
     email: string().email('E-mail inválido').required('Campo obrigatório'),
     firstName: string()
@@ -56,17 +60,14 @@ function SignUpComponent() {
       .oneOf([ref('password')], 'Senha e confirmação diferentes'),
   });
 
-  const {
-    register,
-    formState: { errors, isValid },
-  } = useForm<SignUpDto>({
+  const { setError, register, formState, handleSubmit } = useForm<SignUpDto>({
     defaultValues: {
-      email: '',
-      password: '',
-      firstName: '',
-      surname: '',
-      birthday: new Date(),
-      confirmation: '',
+      email: 'guilherme.lmoraes.devel@gmail.com',
+      firstName: 'Guilherme',
+      surname: 'Leite Moraes',
+      birthday: new Date('07/11/1996'),
+      password: 'Thisway@90',
+      confirmation: 'Thisway@90',
     },
     mode: 'all',
     resolver: yupResolver(signUpValidation),
@@ -91,13 +92,30 @@ function SignUpComponent() {
     </InputAdornment>
   );
 
+  const submitNewUser = async (user: SignUpDto) => {
+    const response = await post<SignUpDto>('auth/sign-up', user);
+    if (isHttpErrorResponse(response)) {
+      setError(response.failedProperty as keyof SignUpDto, {
+        message: response.message,
+      });
+    }
+  };
+
   return (
-    <form className="p-3">
+    <form
+      className="account__sign-up p-3"
+      onSubmit={handleSubmit(submitNewUser)}
+    >
+      {formState.isSubmitting && (
+        <div className="account__sign-up--loading">
+          <CircularProgress />
+        </div>
+      )}
       <TextField
         label="E-mail *"
         type="email"
         fullWidth
-        {...commonTextFieldProps(errors, 'email')}
+        {...commonTextFieldProps(formState, 'email')}
         {...register('email')}
       />
       <Grid container spacing={{ sm: 2 }}>
@@ -106,7 +124,7 @@ function SignUpComponent() {
             label="Nome *"
             type="text"
             fullWidth
-            {...commonTextFieldProps(errors, 'firstName')}
+            {...commonTextFieldProps(formState, 'firstName')}
             {...register('firstName')}
           />
         </Grid>
@@ -115,7 +133,7 @@ function SignUpComponent() {
             label="Sobrenome *"
             type="text"
             fullWidth
-            {...commonTextFieldProps(errors, 'surname')}
+            {...commonTextFieldProps(formState, 'surname')}
             {...register('surname')}
           />
         </Grid>
@@ -124,7 +142,7 @@ function SignUpComponent() {
         label="Data de nascimento *"
         type="date"
         fullWidth
-        {...commonTextFieldProps(errors, 'birthday')}
+        {...commonTextFieldProps(formState, 'birthday')}
         {...register('birthday')}
         InputLabelProps={{ shrink: true }}
       />
@@ -134,7 +152,7 @@ function SignUpComponent() {
             label="Senha *"
             type={passwordType}
             fullWidth
-            {...commonTextFieldProps(errors, 'password')}
+            {...commonTextFieldProps(formState, 'password')}
             {...register('password')}
             InputProps={{
               endAdornment: passwordAdornment(),
@@ -146,7 +164,7 @@ function SignUpComponent() {
             label="Senha *"
             type={passwordType}
             fullWidth
-            {...commonTextFieldProps(errors, 'confirmation')}
+            {...commonTextFieldProps(formState, 'confirmation')}
             {...register('confirmation')}
             InputProps={{
               endAdornment: passwordAdornment(),
@@ -158,9 +176,10 @@ function SignUpComponent() {
         variant="contained"
         fullWidth
         endIcon={<PersonAddIcon />}
-        disabled={!isValid}
+        disabled={!formState.isValid || formState.isSubmitting}
+        type="submit"
       >
-        Criar conta
+        {formState.isSubmitting ? 'Carregando' : 'Criar conta'}
       </Button>
     </form>
   );
