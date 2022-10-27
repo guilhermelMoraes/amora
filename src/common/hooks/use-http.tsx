@@ -15,18 +15,18 @@ function isHttpErrorResponse(response: unknown): response is HttpErrorResponse {
 }
 
 type UseHttpHook = {
-  post<T = unknown>(
+  post<TReturn = unknown, TPayload = unknown>(
     endpoint: string,
-    payload: T
-  ): Promise<T | HttpErrorResponse>;
+    payload: TPayload
+  ): Promise<TReturn | HttpErrorResponse>;
 };
 
 function useHttp(): UseHttpHook {
   const BASE_URI = 'http://localhost:8000/v1/';
 
-  const post = async <T = unknown,>(
+  const post = async <T = unknown, TPayload = unknown>(
     endpoint: string,
-    payload: T
+    payload: TPayload
   ): Promise<T | HttpErrorResponse> => {
     try {
       const { data } = await axios.post<T>(`${BASE_URI}${endpoint}`, payload);

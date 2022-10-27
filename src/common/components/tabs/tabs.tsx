@@ -1,7 +1,13 @@
-import MuiTabs from '@mui/material/Tabs';
-import MuiTab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { ReactElement, ReactNode, SyntheticEvent, useState } from 'react';
+import MuiTab from '@mui/material/Tab';
+import MuiTabs from '@mui/material/Tabs';
+import {
+  Dispatch,
+  ReactElement,
+  ReactNode,
+  SetStateAction,
+  SyntheticEvent,
+} from 'react';
 
 type TabProps = {
   index: number;
@@ -32,11 +38,11 @@ function TabPanel({ currentIndex, index, children }: TabPanelProps) {
 type TabsProps = {
   ariaLabel?: string;
   tabs: TabProps[];
+  tabIndex: number;
+  setTabIndex: Dispatch<SetStateAction<number>>;
 };
 
-function Tabs({ tabs, ariaLabel }: TabsProps) {
-  const [tabIndex, setTabIndex] = useState<number>(0);
-
+function Tabs({ tabs, ariaLabel, setTabIndex, tabIndex }: TabsProps) {
   const navigateToTab = (_event: SyntheticEvent, currentTabIndex: number) => {
     setTabIndex(currentTabIndex);
   };

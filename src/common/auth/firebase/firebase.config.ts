@@ -19,5 +19,6 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
+firebaseApp.automaticDataCollectionEnabled = false;
 
 export default firebaseApp;

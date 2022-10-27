@@ -6,6 +6,7 @@
 .account__header {
   background-color: var(--bs-primary);
   padding: 16px;
+  user-select: none;
 }
 
 .account__sign-up {

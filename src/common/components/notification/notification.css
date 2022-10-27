@@ -1,0 +1,8 @@
+:root {
+  --toastify-color-light: transparent;
+  --toastify-toast-width: 500px;
+}
+
+.notification__container {
+  box-shadow: none;
+}

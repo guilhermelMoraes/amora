@@ -1,3 +1,8 @@
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { date, object, ref, SchemaOf, string } from 'yup';
+
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -6,34 +11,17 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
-import TextField, { BaseTextFieldProps } from '@mui/material/TextField';
+import TextField from '@mui/material/TextField';
 
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useState } from 'react';
-import { FormState, useForm } from 'react-hook-form';
-import { date, object, ref, SchemaOf, string } from 'yup';
+import commonTextFieldProps from '../../common/helpers/common-input-props';
 import useHttp, { isHttpErrorResponse } from '../../common/hooks/use-http';
+import useNotification from '../../common/hooks/use-notification';
+import { CommonTabsProps } from '../account.page';
 import SignUpDto from './sign-up.dto';
 
-const commonTextFieldProps = (
-  formState: FormState<SignUpDto>,
-  field: keyof SignUpDto
-): BaseTextFieldProps => ({
-  variant: 'outlined',
-  size: 'small',
-  autoComplete: 'off',
-  disabled: formState.isSubmitting,
-  helperText: formState.errors[field] ? formState.errors[field]?.message : ' ',
-  FormHelperTextProps: {
-    classes: { root: 'text-truncate' },
-    title: formState.errors[field] ? formState.errors[field]?.message : ' ',
-  },
-  error: Boolean(formState.errors[field]),
-  classes: { root: 'mb-3' },
-});
-
-function SignUpComponent() {
+function SignUpComponent({ setTabIndex }: CommonTabsProps) {
   const { post } = useHttp();
+  const notify = useNotification();
 
   const REQUIRED_FIELD_MESSAGE = 'Campo obrigatório';
   const signUpValidation: SchemaOf<SignUpDto> = object({
@@ -41,11 +29,19 @@ function SignUpComponent() {
     firstName: string()
       .required(REQUIRED_FIELD_MESSAGE)
       .min(2, 'Nome deve conter, no mínimo, dois caracteres')
-      .max(60, 'Nome deve conter, no máximo, sessenta caracteres'),
+      .max(60, 'Nome deve conter, no máximo, sessenta caracteres')
+      .matches(
+        /^[a-zA-Z\s]*$/,
+        'Sobrenome deve conter apenas letras e espaços em branco'
+      ),
     surname: string()
       .required(REQUIRED_FIELD_MESSAGE)
       .min(2, 'Sobrenome deve conter, no mínimo, dois caracteres')
-      .max(60, 'Sobrenome deve conter, no máximo, sessenta caracteres'),
+      .max(60, 'Sobrenome deve conter, no máximo, sessenta caracteres')
+      .matches(
+        /^[a-zA-Z\s]*$/,
+        'Sobrenome deve conter apenas letras e espaços em branco'
+      ),
     birthday: date()
       .required(REQUIRED_FIELD_MESSAGE)
       .typeError('Data em formato inválido'),
@@ -60,18 +56,19 @@ function SignUpComponent() {
       .oneOf([ref('password')], 'Senha e confirmação diferentes'),
   });
 
-  const { setError, register, formState, handleSubmit } = useForm<SignUpDto>({
-    defaultValues: {
-      email: 'guilherme.lmoraes.devel@gmail.com',
-      firstName: 'Guilherme',
-      surname: 'Leite Moraes',
-      birthday: new Date('07/11/1996'),
-      password: 'Thisway@90',
-      confirmation: 'Thisway@90',
-    },
-    mode: 'all',
-    resolver: yupResolver(signUpValidation),
-  });
+  const { setError, reset, register, formState, handleSubmit } =
+    useForm<SignUpDto>({
+      defaultValues: {
+        email: '',
+        firstName: '',
+        surname: '',
+        birthday: new Date(''),
+        password: '',
+        confirmation: '',
+      },
+      mode: 'all',
+      resolver: yupResolver(signUpValidation),
+    });
 
   const [passwordVisible, setPasswordVisible] = useState(false);
   const passwordType = passwordVisible ? 'text' : 'password';
@@ -93,12 +90,28 @@ function SignUpComponent() {
   );
 
   const submitNewUser = async (user: SignUpDto) => {
-    const response = await post<SignUpDto>('auth/sign-up', user);
+    const response = await post<void>('auth/sign-up', user);
     if (isHttpErrorResponse(response)) {
       setError(response.failedProperty as keyof SignUpDto, {
         message: response.message,
       });
+
+      return;
     }
+
+    reset();
+
+    notify(
+      {
+        type: 'success',
+        title: 'Bem-vindo',
+        copy: 'Sua conta foi criada com sucesso. Você será redirecionado para a aba de login',
+      },
+      {
+        position: 'bottom-center',
+        onClose: () => setTabIndex(1),
+      }
+    );
   };
 
   return (
@@ -175,7 +188,7 @@ function SignUpComponent() {
       <Button
         variant="contained"
         fullWidth
-        endIcon={<PersonAddIcon />}
+        startIcon={<PersonAddIcon />}
         disabled={!formState.isValid || formState.isSubmitting}
         type="submit"
       >

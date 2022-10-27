@@ -3,6 +3,7 @@
 @import url("~@fontsource/roboto/500.css");
 @import url("~@fontsource/roboto/700.css");
 @import url("~bootstrap/dist/css/bootstrap.min.css");
+@import url("~react-toastify/dist/ReactToastify.min.css");
 
 :root {
   --app-breakpoint-sm: 576px;
