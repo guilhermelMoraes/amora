@@ -3,11 +3,13 @@ type FullName = {
   surname: string;
 };
 
-interface AuthUser {
+interface User {
   email: string;
+  emailVerified: boolean;
   birthday: Date;
   fullName: FullName;
+  profilePicture: string | null;
 }
 
-export default AuthUser;
+export default User;
 export type { FullName };

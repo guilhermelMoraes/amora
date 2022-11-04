@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { date, object, ref, SchemaOf, string } from 'yup';
 
@@ -13,13 +13,16 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 
-import commonTextFieldProps from '../../common/helpers/common-input-props';
-import useHttp, { isHttpErrorResponse } from '../../common/hooks/use-http';
-import useNotification from '../../common/hooks/use-notification';
-import { CommonTabsProps } from '../account.page';
+import commonTextFieldProps from '../../../common/helpers/common-input-props';
+import useHttp, { isHttpErrorResponse } from '../../../common/hooks/use-http';
+import useNotification from '../../../common/hooks/use-notification';
 import SignUpDto from './sign-up.dto';
 
-function SignUpComponent({ setTabIndex }: CommonTabsProps) {
+type SignUpProps = {
+  setTabIndex: Dispatch<SetStateAction<number>>;
+};
+
+function SignUp({ setTabIndex }: SignUpProps) {
   const { post } = useHttp();
   const notify = useNotification();
 
@@ -70,26 +73,7 @@ function SignUpComponent({ setTabIndex }: CommonTabsProps) {
       resolver: yupResolver(signUpValidation),
     });
 
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const passwordType = passwordVisible ? 'text' : 'password';
-  const passwordInputIcon = passwordVisible ? (
-    <VisibilityIcon />
-  ) : (
-    <VisibilityOffIcon />
-  );
-  const passwordInputText = passwordVisible ? 'Esconder senha' : 'Exibir senha';
-  const passwordAdornment = () => (
-    <InputAdornment position="end">
-      <IconButton
-        aria-label={passwordInputText}
-        onClick={() => setPasswordVisible(!passwordVisible)}
-      >
-        {passwordInputIcon}
-      </IconButton>
-    </InputAdornment>
-  );
-
-  const submitNewUser = async (user: SignUpDto) => {
+  const signUp = async (user: SignUpDto) => {
     const response = await post<void>('auth/sign-up', user);
     if (isHttpErrorResponse(response)) {
       setError(response.failedProperty as keyof SignUpDto, {
@@ -114,13 +98,29 @@ function SignUpComponent({ setTabIndex }: CommonTabsProps) {
     );
   };
 
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const passwordType = passwordVisible ? 'text' : 'password';
+  const passwordInputIcon = passwordVisible ? (
+    <VisibilityIcon />
+  ) : (
+    <VisibilityOffIcon />
+  );
+  const passwordInputText = passwordVisible ? 'Esconder senha' : 'Exibir senha';
+  const passwordAdornment = () => (
+    <InputAdornment position="end">
+      <IconButton
+        aria-label={passwordInputText}
+        onClick={() => setPasswordVisible(!passwordVisible)}
+      >
+        {passwordInputIcon}
+      </IconButton>
+    </InputAdornment>
+  );
+
   return (
-    <form
-      className="account__sign-up p-3"
-      onSubmit={handleSubmit(submitNewUser)}
-    >
+    <form className="account__form p-3" onSubmit={handleSubmit(signUp)}>
       {formState.isSubmitting && (
-        <div className="account__sign-up--loading">
+        <div className="account__form--loading">
           <CircularProgress />
         </div>
       )}
@@ -188,6 +188,7 @@ function SignUpComponent({ setTabIndex }: CommonTabsProps) {
       <Button
         variant="contained"
         fullWidth
+        color="success"
         startIcon={<PersonAddIcon />}
         disabled={!formState.isValid || formState.isSubmitting}
         type="submit"
@@ -198,4 +199,4 @@ function SignUpComponent({ setTabIndex }: CommonTabsProps) {
   );
 }
 
-export default SignUpComponent;
+export default SignUp;

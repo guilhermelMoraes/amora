@@ -1,4 +1,5 @@
 import axios from 'axios';
+import useNotification from './use-notification';
 
 type HttpErrorResponse = {
   type: string;
@@ -23,6 +24,7 @@ type UseHttpHook = {
 
 function useHttp(): UseHttpHook {
   const BASE_URI = 'http://localhost:8000/v1/';
+  const notify = useNotification();
 
   const post = async <T = unknown, TPayload = unknown>(
     endpoint: string,
@@ -36,7 +38,13 @@ function useHttp(): UseHttpHook {
         return error.response?.data as HttpErrorResponse;
       }
 
-      throw new Error('Something went wrong');
+      notify({
+        title: 'Falha no protocolo HTTP',
+        copy: 'Por favor, verifique sua conexão com a internet e/ou tente novamente mais tarde',
+        type: 'info',
+      });
+
+      throw error;
     }
   };
 

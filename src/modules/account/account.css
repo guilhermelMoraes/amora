@@ -1,19 +1,22 @@
+.account__body {
+  background-color: var(--app-dark-bg);
+}
+
 .account__main {
-  background-color: var(--bs-light);
+  background-color: var(--app-white-bg);
   flex: 0 0 100%;
 }
 
 .account__header {
-  background-color: var(--bs-primary);
+  background-color: var(--app-primary-color);
   padding: 16px;
-  user-select: none;
 }
 
-.account__sign-up {
+.account__form {
   position: relative;
 }
 
-.account__sign-up--loading {
+.account__form--loading {
   position: absolute;
   top: 0;
   bottom: 0;

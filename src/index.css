@@ -11,6 +11,9 @@
   --app-breakpoint-lg: 992px;
   --app-breakpoint-xl: 1200px;
   --app-breakpoint-xxl: 1400px;
+  --app-dark-bg: #18181b;
+  --app-white-bg: #f4f4f5;
+  --app-primary-color: #4f46e5;
 }
 
 * {

@@ -1,9 +1,11 @@
+import { ThemeProvider } from '@mui/material/styles';
 import { Flip, ToastContainer } from 'react-toastify';
 import Router from './common/router';
+import theme from './common/styles/theme';
 
 function Main() {
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <ToastContainer
         transition={Flip}
         hideProgressBar
@@ -12,7 +14,7 @@ function Main() {
         closeButton={false}
       />
       <Router />
-    </>
+    </ThemeProvider>
   );
 }
 

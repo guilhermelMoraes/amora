@@ -1,0 +1,13 @@
+.amora__title {
+  user-select: none;
+}
+
+.amora__icon {
+  height: 2.5rem;
+}
+
+@media (max-width: 1200px) {
+  .amora__icon {
+    height: calc(1.375rem + 1.5vw);
+  }
+}
