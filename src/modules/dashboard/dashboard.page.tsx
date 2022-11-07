@@ -1,4 +1,4 @@
-import Navbar from '../../common/components/navbar/navbar';
+import Navbar from './navbar/navbar';
 import './dashboard.css';
 
 import useTitle from '../../common/hooks/use-title';

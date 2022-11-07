@@ -7,10 +7,10 @@ import Tabs from '../../common/components/tabs/tabs';
 import Title from '../../common/components/title/title';
 import useTitle from '../../common/hooks/use-title';
 import './account.css';
-import Login from './login/login';
-import SignUp from './sign-up/sign-up';
+import Login from './components/login/login';
+import SignUp from './components/sign-up/sign-up';
 
-function AccountPage() {
+function AuthPage() {
   useTitle('Cadastrar ou entrar');
 
   const [tabIndex, setTabIndex] = useState<number>(0);
@@ -44,4 +44,4 @@ function AccountPage() {
   );
 }
 
-export default AccountPage;
+export default AuthPage;

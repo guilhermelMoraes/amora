@@ -12,9 +12,9 @@ import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 
 import { useNavigate } from 'react-router-dom';
-import { logout } from '../../auth/auth';
-import useNotification from '../../hooks/use-notification';
-import Title from '../title/title';
+import logout from '../../auth/services/logout';
+import useNotification from '../../../common/hooks/use-notification';
+import Title from '../../../common/components/title/title';
 
 function Navbar() {
   const notify = useNotification();
@@ -41,7 +41,7 @@ function Navbar() {
       return;
     }
 
-    navigate('/connect');
+    navigate('/auth');
   };
 
   return (

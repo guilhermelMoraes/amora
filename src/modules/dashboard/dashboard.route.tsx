@@ -1,6 +1,6 @@
 import { RouteObject } from 'react-router-dom';
 
-import privateRoute from '../../common/auth/private-route';
+import privateRoute from '../auth/services/private-route';
 import ErrorPage from '../error/error.page';
 import DashboardPage from './dashboard.page';
 

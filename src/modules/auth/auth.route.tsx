@@ -1,9 +1,9 @@
 /* eslint-disable consistent-return */
 import { redirect, RouteObject } from 'react-router-dom';
 
-import userLoggedIn from '../../common/auth/auth';
 import ErrorPage from '../error/error.page';
-import AccountPage from './account.page';
+import AuthPage from './auth.page';
+import userLoggedIn from './services/auth-status';
 
 async function redirectAuthenticatedUser() {
   const user = await userLoggedIn();
@@ -12,11 +12,11 @@ async function redirectAuthenticatedUser() {
   }
 }
 
-const account: RouteObject = {
-  path: '/connect',
+const auth: RouteObject = {
+  path: '/auth',
   loader: async () => redirectAuthenticatedUser(),
-  element: <AccountPage />,
+  element: <AuthPage />,
   errorElement: <ErrorPage />,
 };
 
-export default account;
+export default auth;

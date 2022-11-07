@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { AuthError, signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { object, SchemaOf, string } from 'yup';
+import { useNavigate } from 'react-router-dom';
 
 import LoginIcon from '@mui/icons-material/Login';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -13,24 +13,14 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 
-import { useNavigate } from 'react-router-dom';
-import auth from '../../../common/auth/firebase/firebase.config';
-import commonTextFieldProps from '../../../common/helpers/common-input-props';
-import useNotification from '../../../common/hooks/use-notification';
-import LoginDto from './login.dto';
+import commonTextFieldProps from '../../../../common/helpers/common-input-props';
+import useNotification from '../../../../common/hooks/use-notification';
+import firebaseAuth from '../../firebase/firebase.config';
+import LoginDto, { loginValidation } from './login.dto';
 
 function Login() {
   const navigate = useNavigate();
   const notify = useNotification();
-
-  const REQUIRED_FIELD_MESSAGE = 'Campo obrigatório';
-  const loginValidation: SchemaOf<LoginDto> = object({
-    email: string().required(REQUIRED_FIELD_MESSAGE).email('E-mail inválido'),
-    password: string()
-      .required(REQUIRED_FIELD_MESSAGE)
-      .min(8, 'Senha deve conter, no mínimo, oito caracteres')
-      .max(80, 'Senha deve conter, no máximo, oitenta caracteres'),
-  });
 
   const { register, formState, handleSubmit, setError, reset } =
     useForm<LoginDto>({
@@ -63,7 +53,7 @@ function Login() {
 
   const login = async (user: LoginDto): Promise<void> => {
     try {
-      await signInWithEmailAndPassword(auth, user.email, user.password);
+      await signInWithEmailAndPassword(firebaseAuth, user.email, user.password);
       reset();
       navigate('/');
     } catch (error) {
@@ -79,7 +69,7 @@ function Login() {
           notify({
             title: 'Erro interno',
             message:
-              'No momento, não conseguimos conectar você. Por favor, tente novamente mais tarde',
+              'No momento, não conseguimos autenticar você. Por favor, tente novamente mais tarde',
             type: 'error',
           });
           break;

@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { date, object, ref, SchemaOf, string } from 'yup';
+import { useNavigate } from 'react-router-dom';
 
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -13,11 +13,12 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 
-import { useNavigate } from 'react-router-dom';
-import commonTextFieldProps from '../../../common/helpers/common-input-props';
-import useHttp, { isHttpErrorResponse } from '../../../common/hooks/use-http';
-import useNotification from '../../../common/hooks/use-notification';
-import SignUpDto from './sign-up.dto';
+import commonTextFieldProps from '../../../../common/helpers/common-input-props';
+import useHttp, {
+  isHttpErrorResponse,
+} from '../../../../common/hooks/use-http';
+import useNotification from '../../../../common/hooks/use-notification';
+import SignUpDto, { signUpValidation } from './sign-up.dto';
 
 type SignUpProps = {
   setTabIndex: Dispatch<SetStateAction<number>>;
@@ -27,39 +28,6 @@ function SignUp({ setTabIndex }: SignUpProps) {
   const { post } = useHttp();
   const navigate = useNavigate();
   const notify = useNotification();
-
-  const REQUIRED_FIELD_MESSAGE = 'Campo obrigatório';
-  const signUpValidation: SchemaOf<SignUpDto> = object({
-    email: string().email('E-mail inválido').required('Campo obrigatório'),
-    firstName: string()
-      .required(REQUIRED_FIELD_MESSAGE)
-      .min(2, 'Nome deve conter, no mínimo, dois caracteres')
-      .max(60, 'Nome deve conter, no máximo, sessenta caracteres')
-      .matches(
-        /^[a-zA-Z\s]*$/,
-        'Sobrenome deve conter apenas letras e espaços em branco'
-      ),
-    surname: string()
-      .required(REQUIRED_FIELD_MESSAGE)
-      .min(2, 'Sobrenome deve conter, no mínimo, dois caracteres')
-      .max(60, 'Sobrenome deve conter, no máximo, sessenta caracteres')
-      .matches(
-        /^[a-zA-Z\s]*$/,
-        'Sobrenome deve conter apenas letras e espaços em branco'
-      ),
-    birthday: date()
-      .required(REQUIRED_FIELD_MESSAGE)
-      .typeError('Data em formato inválido'),
-    password: string()
-      .required(REQUIRED_FIELD_MESSAGE)
-      .min(8, 'Senha deve conter, no mínimo, oito caracteres')
-      .max(80, 'Senha deve conter, no máximo, oitenta caracteres'),
-    confirmation: string()
-      .required(REQUIRED_FIELD_MESSAGE)
-      .min(8, 'Senha deve conter, no mínimo, oito caracteres')
-      .max(80, 'Senha deve conter, no máximo, oitenta caracteres')
-      .oneOf([ref('password')], 'Senha e confirmação diferentes'),
-  });
 
   const { setError, reset, register, formState, handleSubmit } =
     useForm<SignUpDto>({
