@@ -11,10 +11,14 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 
+import { useNavigate } from 'react-router-dom';
 import { logout } from '../../auth/auth';
+import useNotification from '../../hooks/use-notification';
 import Title from '../title/title';
 
 function Navbar() {
+  const notify = useNotification();
+  const navigate = useNavigate();
   const [anchor, setAnchor] = useState<null | HTMLElement>(null);
   const open = Boolean(anchor);
 
@@ -26,12 +30,26 @@ function Navbar() {
     setAnchor(null);
   };
 
+  const logUserOut = async (): Promise<void> => {
+    const hasError = await logout();
+    if (hasError instanceof Error) {
+      notify({
+        type: 'error',
+        message: 'Por favor, tente novamente mais tarde',
+        title: 'Erro ao encerrar sessão',
+      });
+      return;
+    }
+
+    navigate('/connect');
+  };
+
   return (
-    <AppBar position="absolute" variant="elevation" classes={{ root: 'py-3' }}>
+    <AppBar position="sticky" variant="elevation" classes={{ root: 'py-3' }}>
       <Container maxWidth="xl">
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
-            <Title />
+            <Title withIcon />
           </Grid>
           <Grid item>
             <Tooltip title="Abrir configurações">
@@ -46,7 +64,7 @@ function Navbar() {
               </IconButton>
             </Tooltip>
             <Menu anchorEl={anchor} open={open} onClose={collapseUserMenu}>
-              <MenuItem onClick={logout}>
+              <MenuItem onClick={logUserOut}>
                 <ListItemIcon>
                   <LogoutIcon fontSize="small" />
                 </ListItemIcon>

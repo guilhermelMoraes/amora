@@ -6,20 +6,23 @@ import { object, SchemaOf, string } from 'yup';
 
 import LoginIcon from '@mui/icons-material/Login';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import CircularProgress from '@mui/material/CircularProgress';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 
+import { useNavigate } from 'react-router-dom';
 import auth from '../../../common/auth/firebase/firebase.config';
 import commonTextFieldProps from '../../../common/helpers/common-input-props';
 import useNotification from '../../../common/hooks/use-notification';
 import LoginDto from './login.dto';
 
 function Login() {
+  const navigate = useNavigate();
   const notify = useNotification();
+
   const REQUIRED_FIELD_MESSAGE = 'Campo obrigatório';
   const loginValidation: SchemaOf<LoginDto> = object({
     email: string().required(REQUIRED_FIELD_MESSAGE).email('E-mail inválido'),
@@ -62,6 +65,7 @@ function Login() {
     try {
       await signInWithEmailAndPassword(auth, user.email, user.password);
       reset();
+      navigate('/');
     } catch (error) {
       const errorCode = (error as AuthError).code;
       switch (errorCode) {
@@ -74,7 +78,8 @@ function Login() {
         default:
           notify({
             title: 'Erro interno',
-            copy: 'No momento, não conseguimos conectar você. Por favor, tente novamente mais tarde',
+            message:
+              'No momento, não conseguimos conectar você. Por favor, tente novamente mais tarde',
             type: 'error',
           });
           break;

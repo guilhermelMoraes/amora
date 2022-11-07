@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 
+import { useNavigate } from 'react-router-dom';
 import commonTextFieldProps from '../../../common/helpers/common-input-props';
 import useHttp, { isHttpErrorResponse } from '../../../common/hooks/use-http';
 import useNotification from '../../../common/hooks/use-notification';
@@ -24,6 +25,7 @@ type SignUpProps = {
 
 function SignUp({ setTabIndex }: SignUpProps) {
   const { post } = useHttp();
+  const navigate = useNavigate();
   const notify = useNotification();
 
   const REQUIRED_FIELD_MESSAGE = 'Campo obrigatório';
@@ -65,7 +67,7 @@ function SignUp({ setTabIndex }: SignUpProps) {
         email: '',
         firstName: '',
         surname: '',
-        birthday: new Date(''),
+        birthday: new Date(),
         password: '',
         confirmation: '',
       },
@@ -89,13 +91,16 @@ function SignUp({ setTabIndex }: SignUpProps) {
       {
         type: 'success',
         title: 'Bem-vindo',
-        copy: 'Sua conta foi criada com sucesso. Você será redirecionado para a aba de login',
+        message:
+          'Sua conta foi criada com sucesso. Você será redirecionado para a aba de login',
       },
       {
         position: 'bottom-center',
-        onClose: () => setTabIndex(1),
+        onClose: () => setTabIndex(0),
       }
     );
+
+    navigate('/');
   };
 
   const [passwordVisible, setPasswordVisible] = useState(false);

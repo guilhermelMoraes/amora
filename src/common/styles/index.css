@@ -21,7 +21,7 @@
   padding: 0;
 }
 
-.page-body {
+.page-body--center {
   min-height: 100vh;
   display: flex;
   align-items: center;

@@ -1,6 +1,4 @@
-import { User as FirebaseUser } from 'firebase/auth';
-import { useEffect, useState } from 'react';
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 import LoginIcon from '@mui/icons-material/Login';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -15,23 +13,10 @@ import SignUp from './sign-up/sign-up';
 function AccountPage() {
   useTitle('Cadastrar ou entrar');
 
-  const navigate = useNavigate();
-  const userLoggedIn = useLoaderData() as () => Promise<FirebaseUser | null>;
   const [tabIndex, setTabIndex] = useState<number>(0);
 
-  useEffect(() => {
-    const redirectAuthenticatedUser = async () => {
-      const user = await userLoggedIn();
-      if (user) {
-        navigate('/');
-      }
-    };
-
-    redirectAuthenticatedUser();
-  }, []);
-
   return (
-    <div className="account__body page-body">
+    <div className="account__body page-body--center">
       <main className="account__main rounded">
         <header className="account__header rounded-top">
           <Title centralize withIcon />

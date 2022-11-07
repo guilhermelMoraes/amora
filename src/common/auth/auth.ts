@@ -13,11 +13,12 @@ async function userLoggedIn(): Promise<FirebaseUser | null> {
   });
 }
 
-async function logout(): Promise<void> {
+async function logout(): Promise<null | Error> {
   try {
     await signOut(auth);
+    return null;
   } catch (error) {
-    console.error(error);
+    return error as Error;
   }
 }
 

@@ -11,7 +11,7 @@ function ErrorPage() {
   ) : null;
 
   return (
-    <div className="page-body bg-dark">
+    <div className="page-body--center error__wrapper">
       <main className="error rounded">
         <h1>Alguma coisa deu errado 😭</h1>
         {errorDetails}

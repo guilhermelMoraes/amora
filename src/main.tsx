@@ -1,5 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { Flip, ToastContainer } from 'react-toastify';
+
+import './common/styles/index.css';
 import Router from './common/router';
 import theme from './common/styles/theme';
 

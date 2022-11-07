@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import useNotification from './use-notification';
 
 type HttpErrorResponse = {
@@ -34,14 +34,36 @@ function useHttp(): UseHttpHook {
       const { data } = await axios.post<T>(`${BASE_URI}${endpoint}`, payload);
       return data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return error.response?.data as HttpErrorResponse;
+      if (axios.isAxiosError<HttpErrorResponse>(error)) {
+        switch (error.code) {
+          case AxiosError.ERR_NETWORK:
+            notify({
+              title: 'Falha de rede',
+              message:
+                'Por favor, verifique sua conexão com a internet e/ou tente novamente mais tarde',
+              type: 'info',
+            });
+
+            throw error;
+          case AxiosError.ERR_BAD_REQUEST:
+            return error.response?.data!;
+          default:
+            notify({
+              title: 'Falha de aplicação',
+              message:
+                'Isto, provavelmente, é um erro interno. Por favor, tente novamente mais tarde',
+              type: 'error',
+            });
+
+            throw error;
+        }
       }
 
       notify({
-        title: 'Falha no protocolo HTTP',
-        copy: 'Por favor, verifique sua conexão com a internet e/ou tente novamente mais tarde',
-        type: 'info',
+        title: 'Falha de aplicação',
+        message:
+          'Isto, provavelmente, é um erro interno. Por favor, tente novamente mais tarde',
+        type: 'error',
       });
 
       throw error;

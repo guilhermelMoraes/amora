@@ -1,4 +1,8 @@
+.error__wrapper {
+  background-color: var(--app-dark-bg);
+}
+
 .error {
-  background-color: var(--bs-light);
+  background-color: var(--app-white-bg);
   padding: 16px;
 }
