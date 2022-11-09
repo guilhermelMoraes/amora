@@ -14,7 +14,9 @@ async function redirectAuthenticatedUser() {
 
 const auth: RouteObject = {
   path: '/auth',
-  loader: async () => redirectAuthenticatedUser(),
+  loader: async () => {
+    await redirectAuthenticatedUser();
+  },
   element: <AuthPage />,
   errorElement: <ErrorPage />,
 };

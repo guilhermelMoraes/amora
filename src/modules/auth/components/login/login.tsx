@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AuthError, signInWithEmailAndPassword } from 'firebase/auth';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,10 +15,14 @@ import TextField from '@mui/material/TextField';
 
 import commonTextFieldProps from '../../../../common/helpers/common-input-props';
 import useNotification from '../../../../common/hooks/use-notification';
-import firebaseAuth from '../../firebase/firebase.config';
+import firebaseAuth from '../../infrastructure/firebase/firebase.config';
 import LoginDto, { loginValidation } from './login.dto';
 
-function Login() {
+type LoginProps = {
+  renderResetPassword: Dispatch<SetStateAction<boolean>>;
+};
+
+function Login({ renderResetPassword }: LoginProps) {
   const navigate = useNavigate();
   const notify = useNotification();
 
@@ -77,42 +81,51 @@ function Login() {
     }
   };
 
+  const forgotPassword = (): void => {
+    renderResetPassword(true);
+  };
+
   return (
-    <form className="account__form p-3" onSubmit={handleSubmit(login)}>
-      {formState.isSubmitting && (
-        <div className="account__form--loading">
-          <CircularProgress />
-        </div>
-      )}
-      <TextField
-        type="email"
-        fullWidth
-        label="E-mail *"
-        {...register('email')}
-        {...commonTextFieldProps(formState, 'email')}
-      />
-      <TextField
-        label="Senha *"
-        variant="outlined"
-        type={passwordType}
-        fullWidth
-        InputProps={{
-          endAdornment: passwordAdornment(),
-        }}
-        {...register('password')}
-        {...commonTextFieldProps(formState, 'password')}
-      />
-      <Button
-        variant="contained"
-        fullWidth
-        startIcon={<LoginIcon />}
-        disabled={!formState.isValid || formState.isSubmitting}
-        type="submit"
-        color="success"
-      >
-        {formState.isSubmitting ? 'Carregando' : 'Entrar'}
+    <div className="p-3">
+      <form className="auth__form mb-2" onSubmit={handleSubmit(login)}>
+        {formState.isSubmitting && (
+          <div className="auth__form--loading">
+            <CircularProgress />
+          </div>
+        )}
+        <TextField
+          type="email"
+          fullWidth
+          label="E-mail *"
+          {...register('email')}
+          {...commonTextFieldProps(formState, 'email')}
+        />
+        <TextField
+          label="Senha *"
+          variant="outlined"
+          type={passwordType}
+          fullWidth
+          InputProps={{
+            endAdornment: passwordAdornment(),
+          }}
+          {...register('password')}
+          {...commonTextFieldProps(formState, 'password')}
+        />
+        <Button
+          variant="contained"
+          fullWidth
+          startIcon={<LoginIcon />}
+          disabled={!formState.isValid || formState.isSubmitting}
+          type="submit"
+          color="success"
+        >
+          {formState.isSubmitting ? 'Carregando' : 'Entrar'}
+        </Button>
+      </form>
+      <Button type="button" onClick={forgotPassword}>
+        Esqueceu sua senha? Clique aqui
       </Button>
-    </form>
+    </div>
   );
 }
 

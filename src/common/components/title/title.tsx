@@ -10,7 +10,12 @@ interface AppTitleProps {
 
 function Title({ centralize, withIcon }: AppTitleProps) {
   return (
-    <div className="d-flex align-items-center justify-content-center">
+    <div
+      className={cx('align-items-center justify-content-center', {
+        'd-flex': centralize,
+        'd-inline-flex': !centralize,
+      })}
+    >
       <h1
         className={cx('amora__title m-0 text-light', {
           'text-center': centralize,

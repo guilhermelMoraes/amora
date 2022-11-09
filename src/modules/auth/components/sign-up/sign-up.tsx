@@ -44,7 +44,7 @@ function SignUp({ setTabIndex }: SignUpProps) {
     });
 
   const signUp = async (user: SignUpDto) => {
-    const response = await post<void>('auth/sign-up', user);
+    const response = await post('auth/sign-up', user);
     if (isHttpErrorResponse(response)) {
       setError(response.failedProperty as keyof SignUpDto, {
         message: response.message,
@@ -91,9 +91,9 @@ function SignUp({ setTabIndex }: SignUpProps) {
   );
 
   return (
-    <form className="account__form p-3" onSubmit={handleSubmit(signUp)}>
+    <form className="auth__form p-3" onSubmit={handleSubmit(signUp)}>
       {formState.isSubmitting && (
-        <div className="account__form--loading">
+        <div className="auth__form--loading">
           <CircularProgress />
         </div>
       )}

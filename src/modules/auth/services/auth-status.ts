@@ -1,5 +1,5 @@
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
-import firebaseAuth from '../firebase/firebase.config';
+import firebaseAuth from '../infrastructure/firebase/firebase.config';
 
 async function userLoggedIn(): Promise<FirebaseUser | null> {
   return new Promise<FirebaseUser | null>((resolve) => {

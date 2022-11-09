@@ -1,5 +1,5 @@
 import { signOut } from 'firebase/auth';
-import firebaseAuth from '../firebase/firebase.config';
+import firebaseAuth from '../infrastructure/firebase/firebase.config';
 
 async function logout(): Promise<null | Error> {
   try {

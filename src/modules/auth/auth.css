@@ -5,6 +5,7 @@
 .auth__main {
   background-color: var(--app-white-bg);
   flex: 0 0 100%;
+  overflow: hidden;
 }
 
 .auth__header {
