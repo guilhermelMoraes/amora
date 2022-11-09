@@ -1,22 +1,22 @@
-.account__body {
+.auth__body {
   background-color: var(--app-dark-bg);
 }
 
-.account__main {
+.auth__main {
   background-color: var(--app-white-bg);
   flex: 0 0 100%;
 }
 
-.account__header {
+.auth__header {
   background-color: var(--app-primary-color);
   padding: 16px;
 }
 
-.account__form {
+.auth__form {
   position: relative;
 }
 
-.account__form--loading {
+.auth__form--loading {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -28,19 +28,19 @@
 }
 
 @media (min-width: 576px) {
-  .account__main {
+  .auth__main {
     flex: 0 0 80%;
   }
 }
 
 @media (min-width: 992px) {
-  .account__main {
+  .auth__main {
     flex: 0 0 50%;
   }
 }
 
 @media (min-width: 1400px) {
-  .account__main {
+  .auth__main {
     flex: 0 0 30%;
   }
 }
