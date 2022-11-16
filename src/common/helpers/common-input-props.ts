@@ -11,6 +11,7 @@ const commonTextFieldProps = <
   size: 'small',
   autoComplete: 'off',
   disabled: formState.isSubmitting,
+  fullWidth: true,
   helperText: formState.errors[field]
     ? String(formState.errors[field]?.message)
     : ' ',
