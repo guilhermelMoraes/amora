@@ -4,20 +4,18 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 
+import PasswordInput from '../../../../common/components/password-input/password-input';
 import commonTextFieldProps from '../../../../common/helpers/common-input-props';
 import useHttp, {
   isHttpErrorResponse,
 } from '../../../../common/hooks/use-http';
 import useNotification from '../../../../common/hooks/use-notification';
+import useTitle from '../../../../common/hooks/use-title';
 import SignUpDto, { signUpValidation } from './sign-up.dto';
 
 type SignUpProps = {
@@ -25,23 +23,30 @@ type SignUpProps = {
 };
 
 function SignUp({ setTabIndex }: SignUpProps) {
+  useTitle('Criar conta');
   const { post } = useHttp();
   const navigate = useNavigate();
   const notify = useNotification();
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
-  const { setError, reset, register, formState, handleSubmit } =
-    useForm<SignUpDto>({
-      defaultValues: {
-        email: '',
-        firstName: '',
-        surname: '',
-        birthday: new Date(),
-        password: '',
-        confirmation: '',
-      },
-      mode: 'all',
-      resolver: yupResolver(signUpValidation),
-    });
+  const {
+    setError,
+    reset: resetForm,
+    register,
+    formState,
+    handleSubmit,
+  } = useForm<SignUpDto>({
+    defaultValues: {
+      email: '',
+      firstName: '',
+      surname: '',
+      birthday: new Date(),
+      password: '',
+      confirmation: '',
+    },
+    mode: 'all',
+    resolver: yupResolver(signUpValidation),
+  });
 
   const signUp = async (user: SignUpDto) => {
     const response = await post('auth/sign-up', user);
@@ -53,7 +58,7 @@ function SignUp({ setTabIndex }: SignUpProps) {
       return;
     }
 
-    reset();
+    resetForm();
 
     notify(
       {
@@ -71,25 +76,6 @@ function SignUp({ setTabIndex }: SignUpProps) {
     navigate('/');
   };
 
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const passwordType = passwordVisible ? 'text' : 'password';
-  const passwordInputIcon = passwordVisible ? (
-    <VisibilityIcon />
-  ) : (
-    <VisibilityOffIcon />
-  );
-  const passwordInputText = passwordVisible ? 'Esconder senha' : 'Exibir senha';
-  const passwordAdornment = () => (
-    <InputAdornment position="end">
-      <IconButton
-        aria-label={passwordInputText}
-        onClick={() => setPasswordVisible(!passwordVisible)}
-      >
-        {passwordInputIcon}
-      </IconButton>
-    </InputAdornment>
-  );
-
   return (
     <form className="auth__form p-3" onSubmit={handleSubmit(signUp)}>
       {formState.isSubmitting && (
@@ -100,7 +86,6 @@ function SignUp({ setTabIndex }: SignUpProps) {
       <TextField
         label="E-mail *"
         type="email"
-        fullWidth
         {...commonTextFieldProps(formState, 'email')}
         {...register('email')}
       />
@@ -109,7 +94,6 @@ function SignUp({ setTabIndex }: SignUpProps) {
           <TextField
             label="Nome *"
             type="text"
-            fullWidth
             {...commonTextFieldProps(formState, 'firstName')}
             {...register('firstName')}
           />
@@ -118,7 +102,6 @@ function SignUp({ setTabIndex }: SignUpProps) {
           <TextField
             label="Sobrenome *"
             type="text"
-            fullWidth
             {...commonTextFieldProps(formState, 'surname')}
             {...register('surname')}
           />
@@ -127,34 +110,29 @@ function SignUp({ setTabIndex }: SignUpProps) {
       <TextField
         label="Data de nascimento *"
         type="date"
-        fullWidth
         {...commonTextFieldProps(formState, 'birthday')}
         {...register('birthday')}
         InputLabelProps={{ shrink: true }}
       />
       <Grid container spacing={{ sm: 2 }}>
         <Grid item xs={12} sm={6}>
-          <TextField
+          <PasswordInput
             label="Senha *"
-            type={passwordType}
-            fullWidth
-            {...commonTextFieldProps(formState, 'password')}
+            formState={formState}
+            field="password"
+            visible={passwordVisible}
+            setVisible={setPasswordVisible}
             {...register('password')}
-            InputProps={{
-              endAdornment: passwordAdornment(),
-            }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <TextField
+          <PasswordInput
             label="Senha *"
-            type={passwordType}
-            fullWidth
-            {...commonTextFieldProps(formState, 'confirmation')}
+            formState={formState}
+            field="confirmation"
+            visible={passwordVisible}
+            setVisible={setPasswordVisible}
             {...register('confirmation')}
-            InputProps={{
-              endAdornment: passwordAdornment(),
-            }}
           />
         </Grid>
       </Grid>

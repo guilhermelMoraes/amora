@@ -1,28 +1,31 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AuthError, signInWithEmailAndPassword } from 'firebase/auth';
-import { Dispatch, SetStateAction, useState } from 'react';
+import {
+  AuthError,
+  AuthErrorCodes,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
+import { Dispatch, SetStateAction } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 import LoginIcon from '@mui/icons-material/Login';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 
 import commonTextFieldProps from '../../../../common/helpers/common-input-props';
 import useNotification from '../../../../common/hooks/use-notification';
 import firebaseAuth from '../../infrastructure/firebase/firebase.config';
 import LoginDto, { loginValidation } from './login.dto';
+import useTitle from '../../../../common/hooks/use-title';
+import PasswordInput from '../../../../common/components/password-input/password-input';
 
 type LoginProps = {
   renderResetPassword: Dispatch<SetStateAction<boolean>>;
 };
 
 function Login({ renderResetPassword }: LoginProps) {
+  useTitle('Entrar');
   const navigate = useNavigate();
   const notify = useNotification();
 
@@ -36,25 +39,6 @@ function Login({ renderResetPassword }: LoginProps) {
       resolver: yupResolver(loginValidation),
     });
 
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const passwordType = passwordVisible ? 'text' : 'password';
-  const passwordInputIcon = passwordVisible ? (
-    <VisibilityIcon />
-  ) : (
-    <VisibilityOffIcon />
-  );
-  const passwordInputText = passwordVisible ? 'Esconder senha' : 'Exibir senha';
-  const passwordAdornment = () => (
-    <InputAdornment position="end">
-      <IconButton
-        aria-label={passwordInputText}
-        onClick={() => setPasswordVisible(!passwordVisible)}
-      >
-        {passwordInputIcon}
-      </IconButton>
-    </InputAdornment>
-  );
-
   const login = async (user: LoginDto): Promise<void> => {
     try {
       await signInWithEmailAndPassword(firebaseAuth, user.email, user.password);
@@ -63,10 +47,10 @@ function Login({ renderResetPassword }: LoginProps) {
     } catch (error) {
       const errorCode = (error as AuthError).code;
       switch (errorCode) {
-        case 'auth/user-not-found':
+        case AuthErrorCodes.USER_DELETED:
           setError('email', { message: 'Usuário não encontrado' });
           break;
-        case 'auth/wrong-password':
+        case AuthErrorCodes.INVALID_PASSWORD:
           setError('password', { message: 'Senha incorreta' });
           break;
         default:
@@ -95,21 +79,15 @@ function Login({ renderResetPassword }: LoginProps) {
         )}
         <TextField
           type="email"
-          fullWidth
           label="E-mail *"
           {...register('email')}
           {...commonTextFieldProps(formState, 'email')}
         />
-        <TextField
+        <PasswordInput
           label="Senha *"
-          variant="outlined"
-          type={passwordType}
-          fullWidth
-          InputProps={{
-            endAdornment: passwordAdornment(),
-          }}
+          formState={formState}
+          field="password"
           {...register('password')}
-          {...commonTextFieldProps(formState, 'password')}
         />
         <Button
           variant="contained"
